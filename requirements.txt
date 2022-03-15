@@ -1,0 +1,11 @@
+Flask==2.0.3
+Flask-Cors==3.0.10
+Flask-RESTful==0.3.9
+Flask-Login==0.5.0
+sshTunnel==0.4.0
+mysql-connector-python==8.0.28
+pandas==1.4.1
+PyMySQL==1.0.2
+python-dotenv==0.19.2
+python-jose==3.3.0
+six==1.16.0
