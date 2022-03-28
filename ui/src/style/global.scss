@@ -75,6 +75,7 @@ p {
 
 // == FONTS END ==
 
+// == BUTTONS START ==
 
 .button-standard {
   background: #faf8f8;
@@ -87,6 +88,44 @@ p {
     cursor: pointer;
     background: $color-main;
     transition: 0.3s ease-in-out;
-  ;
   }
+}
+
+// == BUTTONS END ==
+
+// == BULLETS START ==
+
+.star-bullet-point {
+  list-style-type: '⭐';
+  padding-left: 10px;
+  margin-top: 6px;
+}
+
+// == BULLETS END ==
+
+#dynamic-save-button {
+  width: 50px;
+}
+
+.dynamic-input {
+  border: none;
+  width: 250px;
+  max-width: 250px;
+  display: none;
+
+  &:focus {
+    border: solid 0.6px black;
+  }
+}
+
+.p-text {
+  max-width: 250px;
+}
+
+.edit-button {
+  display: none;
+}
+
+#input-wrapper:hover .edit-button {
+  display: inline-block;
 }

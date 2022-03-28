@@ -11,5 +11,5 @@ def convert_custom_object_list_to_dict(input_list: List[any]) -> List[dict]:
     return new_list
 
 
-def convert_custom_object_to_json(input_object: any) -> dict:
+def convert_custom_object_to_dict(input_object: any) -> dict:
     return input_object.__dict__

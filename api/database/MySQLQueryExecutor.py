@@ -7,11 +7,14 @@ class MySQLQueryExecutor:
     def __init__(self, cursor):
         self._cursor = cursor
 
-    def execute_query(self, query):
+    def execute_query(self, query, parameters={}):
         rows = []
 
         try:
-            self._cursor.execute(query)
+            if parameters:
+                self._cursor.execute(query, parameters)
+            else:
+                self._cursor.execute(query)
         except Exception:
             # TODO: Add custom exception
             print("Invalid Query")

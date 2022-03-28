@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List
 
 from api.data.model.meeting.BasicMeeting import BasicMeeting
@@ -14,7 +13,7 @@ class BasicMeetingProvider:
 
     def __init__(self, user_id: str):
         self._result: List[BasicMeeting] = []
-        self._user_id = user_id
+        self._user_id: str = user_id
 
         db_config = DBConfigurationProvider().get_configuration_from_local()
         self._connection_helper = DatabaseConnectionHelper(db_config)
@@ -25,9 +24,6 @@ class BasicMeetingProvider:
 
     def get_meeting_info(self) -> List[BasicMeeting]:
         return self._result
-
-    def finish(self):
-        self._connection_helper.close_connection()
 
     def _get_meeting_information(self) -> List[BasicMeeting]:
         result = []
@@ -42,3 +38,6 @@ class BasicMeetingProvider:
                 result.append(temp_meeting)
 
         return result
+
+    def finish(self) -> None:
+        self._connection_helper.close_connection()
