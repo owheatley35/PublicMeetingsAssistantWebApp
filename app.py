@@ -7,6 +7,7 @@ from flask_cors import CORS, cross_origin
 from api.endpoints.GetBasicMeetingsEndpoint import GetBasicMeetingsEndpoint
 from api.endpoints.GetMeetingEndpoint import GetMeetingEndpoint
 from api.endpoints.notes.CreateNoteEndpoint import CreateNoteEndpoint
+from api.endpoints.notes.DeleteNoteEndpoint import DeleteNoteEndpoint
 from api.endpoints.notes.UpdateNoteEndpoint import UpdateNoteEndpoint
 from security.auth_zero_authentication import requires_auth
 from security.credentials import auth0_domain, api_audience, algorithms, auth0_key
@@ -77,6 +78,18 @@ def create_meeting_note():
     note_content = request.json["note_content"]
     endpoint = CreateNoteEndpoint(_request_ctx_stack.top.current_user_id, meeting_id, note_content)
     endpoint.create_note()
+    endpoint.close_endpoint()
+    return jsonify(success=True)
+
+
+@app.route("/api/delete/meeting-note", methods=["POST"])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def delete_meeting_note():
+    meeting_id = request.json["meeting_id"]
+    note_index = request.json["note_index"]
+    endpoint = DeleteNoteEndpoint(_request_ctx_stack.top.current_user_id, meeting_id, note_index)
+    endpoint.delete_note()
     endpoint.close_endpoint()
     return jsonify(success=True)
 

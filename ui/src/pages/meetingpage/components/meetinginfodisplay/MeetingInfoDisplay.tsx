@@ -5,6 +5,7 @@ import {useState} from "react";
 import updateMeetingNote, {validateNote} from "../../MeetingNoteUpdater";
 import {useAuth0} from "@auth0/auth0-react";
 import createNewMeeting from "../../MeetingNoteCreator";
+import deleteMeetingNote from "../../MeetingNoteDeleter";
 
 function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
 
