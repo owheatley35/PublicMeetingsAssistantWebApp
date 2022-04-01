@@ -1,0 +1,1 @@
+STRING_SPLITTER: str = "/#&-"

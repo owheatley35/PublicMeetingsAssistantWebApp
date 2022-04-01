@@ -20,6 +20,9 @@ class DatabaseConnectionHelper:
     def get_connection_cursor(self):
         return self._connection.cursor()
 
+    def commit_connection(self) -> None:
+        self._connection.commit()
+
     def close_connection(self):
         if self._connection.is_connected():
             self._connection.close()

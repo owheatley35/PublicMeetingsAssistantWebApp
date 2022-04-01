@@ -1,11 +1,87 @@
 import MeetingInfoDisplayProps from "./MeetingInfoDisplayProps";
 import "../../../../style/pages/meetingpage/components/meetinginfodisplay/MeetingInfoDisplay.scss"
 import Constants from "../../../../global/Constants";
+import {useState} from "react";
+import updateMeetingNote, {validateNote} from "../../MeetingNoteUpdater";
+import {useAuth0} from "@auth0/auth0-react";
+import createNewMeeting from "../../MeetingNoteCreator";
 
 function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
 
+    const {getAccessTokenSilently} = useAuth0();
     const listOfNotes = formatNotes(props.meetingInfo.meetingNotes)
-    const elementNotesList = listOfNotes.map((note) =>  <li className="note-item star-bullet-point"><p>{note}</p></li>)
+    const [newNoteState, updateNewNoteState] = useState("")
+
+    let counter: number = 0;
+    const [meetingNotesArrayState, updateMeetingNotesArrayState] = useState(listOfNotes)
+    const [meetingNotesArrayNoEditState, updateMeetingNotesArrayNoEditState] = useState(listOfNotes)
+
+    let i = 0;
+    let initArray = []
+    for (i = 0; i < listOfNotes.length; i++) {
+        initArray.push(true)
+    }
+
+    const [editModeList, updateEditModeList] = useState(initArray)
+
+    const elementNotesList = listOfNotes.map((note) => {
+        const currentCounterValue = counter
+        counter = counter + 1;
+
+        const divId = "input-wrapper-" + currentCounterValue.toString();
+        const editButtonId = "edit-button-" + currentCounterValue.toString();
+        const textAreaId = `input-${currentCounterValue.toString()}`
+        const pTextId = `p-text-${currentCounterValue.toString()}`
+        const cancelButtonId = `cancel-button-id-${currentCounterValue.toString()}`
+
+        const divStyle = `#${divId}:hover #${editButtonId} { display: inline-block; }`;
+        let styleSheet = document.createElement("style")
+        styleSheet.innerText = divStyle
+        document.head.appendChild(styleSheet)
+
+        return (
+            <li className="note-item star-bullet-point">
+                <div id={divId}>
+                    <textarea className="dynamic-input" id={textAreaId} value={meetingNotesArrayState[currentCounterValue]}
+                              onChange={e => updateStateNotesArray(currentCounterValue, e.target.value)} contentEditable/>
+                    <p className="p-text" id={pTextId}>{meetingNotesArrayState[currentCounterValue]}</p>
+                    <button className="edit-button button-standard" id={editButtonId} onClick={() => {
+                        if (editModeList[currentCounterValue]) {
+                            document.getElementById(textAreaId)!.style.display = "inline-block";
+                            document.getElementById(pTextId)!.style.display = "none";
+                            document.getElementById(editButtonId)!.innerText = "Save";
+                            document.getElementById(cancelButtonId)!.style.display = "inline-block";
+                            updateEditModeListArray(currentCounterValue,false);
+                        } else {
+                            document.getElementById(textAreaId)!.style.display = "none";
+                            document.getElementById(pTextId)!.style.display = "inline-block";
+                            document.getElementById(editButtonId)!.innerText = "Edit";
+                            document.getElementById(cancelButtonId)!.style.display = "none";
+                            updateEditModeListArray(currentCounterValue, true);
+
+                            const accessCodePromise = getAccessTokenSilently()
+                            updateMeetingNote(accessCodePromise, Number(props.meetingInfo.meetingID),
+                                currentCounterValue, meetingNotesArrayState[currentCounterValue]).then(r => console.log("Complete"))
+
+                            updateStateMeetingNotesArrayNoEditState(currentCounterValue, meetingNotesArrayState[currentCounterValue])
+                        }
+                    }}>EDIT
+                    </button>
+                    <button className="button-standard cancel-button-li" id={cancelButtonId} onClick={() => {
+                        document.getElementById(textAreaId)!.style.display = "none";
+                        document.getElementById(pTextId)!.style.display = "inline-block";
+                        document.getElementById(editButtonId)!.innerText = "Edit";
+                        document.getElementById(cancelButtonId)!.style.display = "none";
+
+                        updateStateNotesArray(currentCounterValue, meetingNotesArrayNoEditState[currentCounterValue])
+                        updateEditModeListArray(currentCounterValue, true);
+                    }}>
+                        Cancel
+                    </button>
+                </div>
+            </li>
+        )
+    })
 
     return (
         <div className="meeting-info-display">
@@ -52,6 +128,36 @@ function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
                                             <div className="inner-notes-body-section">
                                                 <ul className="notes-list">
                                                     {elementNotesList}
+                                                    <li className="new-note-li">
+                                                        <button className="button-standard" id="new-note-button" onClick={ () => {
+                                                            document.getElementById("new-note-wrap")!.style.display = "inline-block";
+                                                            document.getElementById("new-note-button")!.style.display = "none";
+                                                            checkNewNoteAndAdjustUI();
+                                                        }}>⭐ New ⭐</button>
+                                                        <div className="new-note-div" id="new-note-wrap">
+                                                            <textarea id="new-note-textarea" value={newNoteState} onChange={e => {
+                                                                updateNewNoteState(e.target.value)
+                                                                checkNewNoteAndAdjustUI();
+                                                            }}/>
+                                                            <button className="button-standard" id="save-new-note" onClick={() => {
+                                                                document.getElementById("new-note-button")!.style.display = "inline-block";
+                                                                document.getElementById("new-note-wrap")!.style.display = "none";
+
+                                                                const accessCodePromise = getAccessTokenSilently()
+                                                                createNewMeeting(accessCodePromise, Number(props.meetingInfo.meetingID), newNoteState).then(() => {
+                                                                    updateNewNoteState("")
+                                                                    window.location.reload()
+                                                                })
+                                                            }}>Save</button>
+                                                            <button className="button-standard" id="new-note-back-button" onClick={() => {
+                                                                document.getElementById("new-note-button")!.style.display = "inline-block";
+                                                                document.getElementById("new-note-wrap")!.style.display = "none";
+                                                                updateNewNoteState("");
+                                                                checkNewNoteAndAdjustUI();
+                                                            }}>Cancel</button>
+                                                            <p className="invalid-warning" id="invalid-warning">Your input is invalid.</p>
+                                                        </div>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -74,6 +180,34 @@ function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
             </div>
         </div>
     )
+
+    function updateStateNotesArray(index: number, newValue: string) {
+        let newArray = [...meetingNotesArrayState];
+        newArray[index] = newValue;
+        updateMeetingNotesArrayState(newArray);
+    }
+
+    function updateStateMeetingNotesArrayNoEditState(index: number, newValue: string) {
+        let newArray = [...meetingNotesArrayNoEditState];
+        newArray[index] = newValue;
+        updateMeetingNotesArrayNoEditState(newArray);
+    }
+
+    function updateEditModeListArray(index: number, newValue: boolean) {
+        let newArray = [...editModeList];
+        newArray[index] = newValue;
+        updateEditModeList(newArray);
+    }
+
+    function checkNewNoteAndAdjustUI() {
+        if (!validateNote(1, newNoteState)) {
+            document.getElementById("save-new-note")!.style.display = "none";
+            document.getElementById("invalid-warning")!.style.display = "inline-block";
+        } else {
+            document.getElementById("save-new-note")!.style.display = "inline-block";
+            document.getElementById("invalid-warning")!.style.display = "none";
+        }
+    }
 }
 
 function formatNotes(notes: string): string[] {

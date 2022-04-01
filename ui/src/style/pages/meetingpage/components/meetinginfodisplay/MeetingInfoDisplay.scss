@@ -62,7 +62,7 @@
             .inner-main-body-section-meeting-info-display {
 
               .transcript-wrap-main-body-section-meeting-info-display {
-
+                margin-bottom: 15px;
               }
 
               .notes-section-main-body-section-meeting-info-display {
@@ -80,4 +80,16 @@
   }
 }
 
+.new-note-li {
+  margin: 10px;
+}
+
+.new-note-div {
+  display: none;
+}
+
+.cancel-button-li {
+  margin: 3px;
+  display: none;
+}
 // use ⭐ for bullets.

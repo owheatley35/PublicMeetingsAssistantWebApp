@@ -14,10 +14,9 @@ FROM MeetingsAssistantInitial.meetings WHERE UserId = %(user_id)s AND MeetingId 
 class MeetingProvider:
 
     def __init__(self, user_id: str, meeting_id: int):
-        super().__init__()
         self._user_id: str = user_id
         self._meeting_id: int = meeting_id
-        self._result: Meeting = Meeting(0, "", datetime.datetime.now(), 0, "", [""])
+        self._result: Meeting = Meeting(0, "", datetime.datetime.now(), 0, "", "")
 
         db_config = DBConfigurationProvider().get_configuration_from_local()
         self._connection_helper = DatabaseConnectionHelper(db_config)
