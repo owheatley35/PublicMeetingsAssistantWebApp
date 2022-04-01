@@ -45,8 +45,7 @@ const MeetingsListMenuItem = (props: MeetingListMenuItemProps) => {
 }
 
 function handleViewMeetingClick(meetingId: String) {
-    // Nav to the view meeting page with this meetingId as the variable
-    console.log("clicked");
+    window.location.replace(`/meeting/${meetingId}`)
 }
 
 export default MeetingsListMenuItem;
