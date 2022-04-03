@@ -1,4 +1,3 @@
-from mysql.connector.cursor_cext import CMySQLCursor
 from sshtunnel import SSHTunnelForwarder
 
 from api.database.DBConfiguration import DBConfiguration
@@ -22,7 +21,7 @@ class DatabaseConnectionHelper:
         self._connection = self._establish_connection()
         print("MySQL DB Connection Established")
 
-    def get_connection_cursor(self) -> CMySQLCursor:
+    def get_connection_cursor(self):
         """
         Retrieve the connection cursor
 
