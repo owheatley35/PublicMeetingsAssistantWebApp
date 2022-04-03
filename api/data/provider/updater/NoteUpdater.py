@@ -1,7 +1,7 @@
 from api.database.DBConfigurationProvider import DBConfigurationProvider
 from api.database.DatabaseConnectionHelper import DatabaseConnectionHelper
 from api.database.MySQLQueryExecutor import MySQLQueryExecutor
-from api.helper.SQLValidationHelper import validate_user_id, validate_meeting_id, validate_meeting_note_list_string
+from api.helper.SQLValidationHelper import validate_user_id, validate_meeting_id, validate_input_string
 
 SQL_QUERY = """UPDATE MeetingsAssistantInitial.meetings
 SET MeetingNotes = %(new_note)s
@@ -37,4 +37,4 @@ class NoteUpdater:
         # Meeting note validation happens in endpoint class since it must be checked before the string is concatenated
         # Meeting note checks in this method are more basic than the full checks.
         return validate_user_id(self._user_id) and validate_meeting_id(self._meeting_id) and \
-               validate_meeting_note_list_string(self._new_note)
+               validate_input_string(self._new_note)

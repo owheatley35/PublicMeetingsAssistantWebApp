@@ -212,8 +212,12 @@ function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
 }
 
 function formatNotes(notes: string): string[] {
-    let splitNotes = notes.split(Constants.NOTE_SPLITTER)
-    return splitNotes.splice(1)
+    if (notes) {
+        let splitNotes = notes.split(Constants.NOTE_SPLITTER)
+        return splitNotes.splice(1)
+    } else {
+        return []
+    }
 }
 
 export default MeetingInfoDisplay

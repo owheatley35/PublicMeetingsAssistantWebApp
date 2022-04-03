@@ -4,6 +4,7 @@ from flask import Flask, send_from_directory, jsonify, _request_ctx_stack, reque
 from flask_cors import CORS, cross_origin
 
 # Created with help from this tutorial: https://towardsdatascience.com/build-deploy-a-react-flask-app-47a89a5d17d9
+from api.endpoints.CreateMeetingEndpoint import CreateMeetingEndpoint
 from api.endpoints.GetBasicMeetingsEndpoint import GetBasicMeetingsEndpoint
 from api.endpoints.GetMeetingEndpoint import GetMeetingEndpoint
 from api.endpoints.notes.CreateNoteEndpoint import CreateNoteEndpoint
@@ -90,6 +91,23 @@ def delete_meeting_note():
     note_index = request.json["note_index"]
     endpoint = DeleteNoteEndpoint(_request_ctx_stack.top.current_user_id, meeting_id, note_index)
     endpoint.delete_note()
+    endpoint.close_endpoint()
+    return jsonify(success=True)
+
+
+@app.route("/api/create/meeting", methods=["POST"])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def create_meeting():
+    meeting_title = request.json["meeting_title"]
+    meeting_description = request.json["meeting_description"]
+    meeting_date = request.json["meeting_date"]
+    meeting_time = request.json["meeting_time"]
+    meeting_attendees = request.json["meeting_attendees"]
+
+    endpoint = CreateMeetingEndpoint(_request_ctx_stack.top.current_user_id, meeting_title, meeting_description,
+                                     meeting_date, meeting_time, meeting_attendees)
+    endpoint.create_meeting()
     endpoint.close_endpoint()
     return jsonify(success=True)
 

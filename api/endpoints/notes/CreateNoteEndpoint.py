@@ -14,7 +14,7 @@ class CreateNoteEndpoint:
 
     def create_note(self) -> bool:
         if self._endpoint_status and validate_meeting_note(self._new_note_content):
-            new_notes_string = self._existing_notes + STRING_SPLITTER + self._new_note_content.strip()
+            new_notes_string = self._form_new_notes_string()
             note_updater = NoteUpdater(self._user_id, self._meeting_id, new_notes_string)
             note_updater.send_note()
             note_updater.finish()
@@ -24,3 +24,9 @@ class CreateNoteEndpoint:
 
     def close_endpoint(self) -> None:
         self._endpoint_status = False
+
+    def _form_new_notes_string(self):
+        if self._existing_notes:
+            return self._existing_notes + STRING_SPLITTER + self._new_note_content.strip()
+        else:
+            return STRING_SPLITTER + self._new_note_content.strip()
