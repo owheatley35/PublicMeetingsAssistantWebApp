@@ -10,5 +10,8 @@ class DBConfigurationProvider:
     """
 
     def get_configuration_from_local(self) -> DBConfiguration:
+        """
+        :return: DBConfiguration object containing all the information required to create a connection to a database.
+        """
         return DBConfiguration(host, ssh_username, ssh_code_path, db_username, db_password, port, ec2_host, ec2_dns,
                                db_host, ec2_connection_host)

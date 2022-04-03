@@ -10,6 +10,7 @@ from six.moves.urllib.request import urlopen
 from security.credentials import auth0_domain, api_audience, algorithms, auth0_key
 from security.exceptions.AuthError import AuthError
 
+# Gather configuration information from credentials.py
 AUTH0_DOMAIN = auth0_domain
 API_AUDIENCE = api_audience
 ALGORITHMS = algorithms
@@ -17,7 +18,8 @@ AUTH0_KEY = auth0_key
 
 
 def get_token_auth_header():
-    """Obtains the Access Token from the Authorization Header
+    """
+    Obtains the Access Token from the Authorization Header
     """
     auth = request.headers.get("Authorization", None)
     if not auth:
@@ -46,7 +48,8 @@ def get_token_auth_header():
 
 
 def requires_auth(f):
-    """Determines if the Access Token is valid
+    """
+    Determines if the Access Token is valid
     """
 
     @wraps(f)
@@ -108,7 +111,8 @@ def requires_auth(f):
 
 
 def requires_scope(required_scope):
-    """Determines if the required scope is present in the Access Token
+    """
+    Determines if the required scope is present in the Access Token
     Args:
         required_scope (str): The scope required to access the resource
     """

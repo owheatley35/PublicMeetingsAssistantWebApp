@@ -5,6 +5,19 @@ class DBConfiguration:
 
     def __init__(self, db_host: str, ssh_username: str, ssh_code_path: str, db_username: str, db_password: str,
                  db_port: str, ec2_host: str, ec2_dns: str, db_host_with_port: (str, int), ec2_connection_host: str):
+        """
+        :param db_host: string containing the host for the database
+        :param ssh_username: username for the ssh tunnel
+        :param ssh_code_path: Path to the file containing the key code for the ssh tunnel
+        :param db_username: username for the database
+        :param db_password: password for the database
+        :param db_port: port number for the database connection
+        :param ec2_host: ec2 host url string
+        :param ec2_dns: ec2 dns url
+        :param db_host_with_port: db host and port
+        :param ec2_connection_host: Connection host to the ec2 instance
+        """
+
         self._host = db_host
         self._ssh_username = ssh_username
         self._ssh_code_path = ssh_code_path

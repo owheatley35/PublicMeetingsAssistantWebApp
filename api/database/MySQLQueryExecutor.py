@@ -5,9 +5,20 @@ class MySQLQueryExecutor:
     """
 
     def __init__(self, cursor):
+        """
+        :param cursor: A cursor object, should be created from the DatabaseConnectionHelper
+        """
         self._cursor = cursor
 
     def execute_query(self, query, parameters={}):
+        """
+        Run a SQL query on a database using the cursor provided.
+        Resets the cursor when done.
+
+        :param query: String containing the SQL query
+        :param parameters: optional - dictionary containing the parameters
+        :return: list of rows retrieved from the result of the database
+        """
         rows = []
 
         try:

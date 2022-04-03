@@ -1,10 +1,12 @@
 from datetime import datetime
-from typing import List
 
 from api.data.model.meeting.BasicMeeting import BasicMeeting
 
 
 class Meeting(BasicMeeting):
+    """
+    Class to model a Meeting
+    """
 
     def __init__(self, meeting_id: int, meeting_title: str, meeting_date_time: datetime, number_of_attendees: int,
                  meeting_transcript: str, meeting_notes: str):
