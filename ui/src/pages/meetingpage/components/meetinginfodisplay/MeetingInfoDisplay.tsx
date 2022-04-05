@@ -5,7 +5,7 @@ import {useState} from "react";
 import updateMeetingNote, {validateNote} from "../../MeetingNoteUpdater";
 import {useAuth0} from "@auth0/auth0-react";
 import createNewMeeting from "../../MeetingNoteCreator";
-import deleteMeetingNote from "../../MeetingNoteDeleter";
+import DeleteMeetingButton from "../DeleteMeetingButton";
 
 function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
 
@@ -104,7 +104,7 @@ function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
                                         <button className="button-standard">EDIT</button>
                                     </div>
                                     <div className="button-wrap">
-                                        <button className="button-standard">DELETE</button>
+                                        <DeleteMeetingButton  meetingId={Number(props.meetingInfo.meetingID)}/>
                                     </div>
                                 </div>
                             </div>

@@ -1,7 +1,7 @@
 from typing import List
 
 from api.data.provider.meeting.MeetingProvider import MeetingProvider
-from api.data.provider.updater.NoteUpdater import NoteUpdater
+from api.data.updater.NoteUpdater import NoteUpdater
 from api.helper.StringHelper import break_string_into_list, convert_list_into_string
 
 

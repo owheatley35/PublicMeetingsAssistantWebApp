@@ -1,6 +1,6 @@
 from api.Constants import STRING_SPLITTER
 from api.data.provider.meeting.MeetingProvider import MeetingProvider
-from api.data.provider.updater.NoteUpdater import NoteUpdater
+from api.data.updater.NoteUpdater import NoteUpdater
 from api.helper.SQLValidationHelper import validate_meeting_note
 
 

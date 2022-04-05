@@ -20,8 +20,8 @@ const MeetingsListMenuSection = () => {
     useEffect(() => {
         const getMeetingItems = async () => {
             const accessToken = await getAccessTokenSilently();
-            const meetingItems = await getUsersMeetings(accessToken)
-            setMeetingListMenuSectionProps(meetingItems)
+            const meetingItems = await getUsersMeetings(accessToken);
+            setMeetingListMenuSectionProps(meetingItems);
         }
         getMeetingItems()
     }, []);
