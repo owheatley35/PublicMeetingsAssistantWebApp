@@ -6,12 +6,17 @@ import updateMeetingNote, {validateNote} from "../../MeetingNoteUpdater";
 import {useAuth0} from "@auth0/auth0-react";
 import createNewMeeting from "../../MeetingNoteCreator";
 import DeleteMeetingButton from "../DeleteMeetingButton";
+import getUserRole from "../../../../global/helper/RoleHelper";
+import deleteMeetingNote from "../../MeetingNoteDeleter";
+import EditMeetingPage from "../../../editmeetingpage/EditMeetingPage";
+
 
 function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
 
     const {getAccessTokenSilently} = useAuth0();
     const listOfNotes = formatNotes(props.meetingInfo.meetingNotes)
     const [newNoteState, updateNewNoteState] = useState("")
+    const [userRole, updateUserRole] = useState("");
 
     let counter: number = 0;
     const [meetingNotesArrayState, updateMeetingNotesArrayState] = useState(listOfNotes)
@@ -22,6 +27,11 @@ function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
     for (i = 0; i < listOfNotes.length; i++) {
         initArray.push(true)
     }
+
+    const tokenMethod = getAccessTokenSilently()
+    getUserRole(tokenMethod).then((result) => {
+        updateUserRole(result)
+    })
 
     const [editModeList, updateEditModeList] = useState(initArray)
 
@@ -34,6 +44,7 @@ function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
         const textAreaId = `input-${currentCounterValue.toString()}`
         const pTextId = `p-text-${currentCounterValue.toString()}`
         const cancelButtonId = `cancel-button-id-${currentCounterValue.toString()}`
+        const deleteButtonId = `delete-button-id-${currentCounterValue.toString()}`
 
         const divStyle = `#${divId}:hover #${editButtonId} { display: inline-block; }`;
         let styleSheet = document.createElement("style")
@@ -52,12 +63,18 @@ function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
                             document.getElementById(pTextId)!.style.display = "none";
                             document.getElementById(editButtonId)!.innerText = "Save";
                             document.getElementById(cancelButtonId)!.style.display = "inline-block";
+
+                            if (isUserAdmin()) {
+                                document.getElementById(deleteButtonId)!.style.display = "inline-block";
+                            }
+
                             updateEditModeListArray(currentCounterValue,false);
                         } else {
                             document.getElementById(textAreaId)!.style.display = "none";
                             document.getElementById(pTextId)!.style.display = "inline-block";
                             document.getElementById(editButtonId)!.innerText = "Edit";
                             document.getElementById(cancelButtonId)!.style.display = "none";
+                            document.getElementById(deleteButtonId)!.style.display = "none";
                             updateEditModeListArray(currentCounterValue, true);
 
                             const accessCodePromise = getAccessTokenSilently()
@@ -68,11 +85,21 @@ function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
                         }
                     }}>EDIT
                     </button>
+                    <button className="button-standard delete-buttons-class" name="delete-button" id={deleteButtonId} onClick={() => {
+                        const deleteButton = document.getElementById(deleteButtonId)! as HTMLInputElement
+                        deleteButton.disabled = true;
+                        deleteButton.innerText = "Delete in progress...";
+
+                        const localToken = getAccessTokenSilently()
+                        deleteMeetingNote(localToken, Number(props.meetingInfo.meetingID), currentCounterValue).then(() =>
+                        window.location.reload())
+                    }}>Delete Note</button>
                     <button className="button-standard cancel-button-li" id={cancelButtonId} onClick={() => {
                         document.getElementById(textAreaId)!.style.display = "none";
                         document.getElementById(pTextId)!.style.display = "inline-block";
                         document.getElementById(editButtonId)!.innerText = "Edit";
                         document.getElementById(cancelButtonId)!.style.display = "none";
+                        document.getElementById(deleteButtonId)!.style.display = "none";
 
                         updateStateNotesArray(currentCounterValue, meetingNotesArrayNoEditState[currentCounterValue])
                         updateEditModeListArray(currentCounterValue, true);
@@ -101,7 +128,9 @@ function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
                             <div className="inner-options-title-section-meeting-info-display">
                                 <div className="horizontal-options-title-section-meeting-info-display">
                                     <div className="button-wrap">
-                                        <button className="button-standard">EDIT</button>
+                                        <button className="button-standard" onClick={() => {
+                                            document.location.replace(`/update-meeting/${props.meetingInfo.meetingID}`)
+                                        }}>EDIT</button>
                                     </div>
                                     <div className="button-wrap">
                                         <DeleteMeetingButton  meetingId={Number(props.meetingInfo.meetingID)}/>
@@ -208,6 +237,10 @@ function MeetingInfoDisplay(props: MeetingInfoDisplayProps) {
             document.getElementById("save-new-note")!.style.display = "inline-block";
             document.getElementById("invalid-warning")!.style.display = "none";
         }
+    }
+
+    function isUserAdmin() {
+        return userRole == "role:admin"
     }
 }
 

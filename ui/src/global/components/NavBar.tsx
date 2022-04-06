@@ -18,9 +18,6 @@ function NavBar() {
                                 <p className="text-item-list-navigation-navbar" onClick={divertHome}>Home</p>
                             </li>
                             <li className="item-list-navigation-navbar">
-                                <p className="text-item-list-navigation-navbar">Help</p>
-                            </li>
-                            <li className="item-list-navigation-navbar">
                                 <UserManagementButton/>
                             </li>
                         </ul>

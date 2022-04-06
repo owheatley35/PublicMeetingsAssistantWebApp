@@ -7,6 +7,7 @@ from flask_cors import CORS, cross_origin
 # Created with help from this tutorial: https://towardsdatascience.com/build-deploy-a-react-flask-app-47a89a5d17d9
 from api.endpoints.CreateMeetingEndpoint import CreateMeetingEndpoint
 from api.endpoints.DeleteMeetingEndpoint import DeleteMeetingEndpoint
+from api.endpoints.EditMeetingEndpoint import EditMeetingEndpoint
 from api.endpoints.GetBasicMeetingsEndpoint import GetBasicMeetingsEndpoint
 from api.endpoints.GetMeetingEndpoint import GetMeetingEndpoint
 from api.endpoints.UserRoleEndpoint import UserRoleEndpoint
@@ -33,6 +34,8 @@ def handle_auth_error(ex):
     """
     Handling of users being un authorised or un-authenticated when accessing secure endpoints.
     """
+    logging.error("ATTEMPTED UNAUTHORISED ACCESS:", ex.error)
+
     response = jsonify(ex.error)
     response.status_code = ex.status_code
     return response
@@ -46,6 +49,7 @@ def root(path):
     """
     Base endpoint returning the React frontend app found in /ui
     """
+    logging.info("Path accessed:", path)
     return send_from_directory(app.static_folder, 'index.html')
 
 
@@ -58,6 +62,8 @@ def get_basic_meetings():
 
     SECURE ENDPOINT
     """
+    logging.info("CALLED: /api/get/all-basic-meetings")
+
     endpoint = GetBasicMeetingsEndpoint(_request_ctx_stack.top.current_user_id)
     endpoint_result = endpoint.get_endpoint_result()
     threading.Thread(target=endpoint.close_endpoint).start()
@@ -73,6 +79,8 @@ def get_meeting_from_id():
 
     SECURE ENDPOINT
     """
+    logging.info("CALLED: /api/get/meeting-from-id")
+
     meeting_id = request.json["meeting_id"]
     endpoint = GetMeetingEndpoint(_request_ctx_stack.top.current_user_id, meeting_id)
     endpoint_result = endpoint.get_endpoint_result()
@@ -89,6 +97,8 @@ def update_meeting_note():
 
     SECURE ENDPOINT
     """
+    logging.info("CALLED: /api/update/meeting-note")
+
     meeting_id = request.json["meeting_id"]
     note_content = request.json["note_content"]
     note_index = request.json["note_index"]
@@ -107,6 +117,8 @@ def create_meeting_note():
 
     SECURE ENDPOINT
     """
+    logging.info("CALLED: /api/create/meeting-note")
+
     meeting_id = request.json["meeting_id"]
     note_content = request.json["note_content"]
     endpoint = CreateNoteEndpoint(_request_ctx_stack.top.current_user_id, meeting_id, note_content)
@@ -124,6 +136,8 @@ def delete_meeting_note():
 
     SECURE ENDPOINT
     """
+    logging.info("CALLED: /api/delete/meeting-note")
+
     meeting_id = request.json["meeting_id"]
     note_index = request.json["note_index"]
     endpoint = DeleteNoteEndpoint(_request_ctx_stack.top.current_user_id, meeting_id, note_index)
@@ -141,6 +155,8 @@ def create_meeting():
 
     SECURE ENDPOINT
     """
+    logging.info("CALLED: /api/create/meeting")
+
     meeting_title = request.json["meeting_title"]
     meeting_description = request.json["meeting_description"]
     meeting_date = request.json["meeting_date"]
@@ -163,6 +179,7 @@ def delete_meeting():
 
     SECURE ENDPOINT
     """
+    logging.info("CALLED: /api/delete/meeting")
 
     meeting_id = request.json["meeting_id"]
     endpoint = DeleteMeetingEndpoint(_request_ctx_stack.top.current_user_id, meeting_id)
@@ -180,11 +197,35 @@ def get_user_role():
 
     SECURE ENDPOINT
     """
+    logging.info("CALLED: /api/get/user/role")
 
     endpoint = UserRoleEndpoint(_request_ctx_stack.top.current_user_id)
     role = endpoint.get_user_role()
     endpoint.close_endpoint()
     return role.get_formatted_response()
+
+
+@app.route("/api/update/meeting-details", methods=["POST"])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def update_meeting_details():
+    """
+    Endpoint to update a meeting's details.
+
+    SECURE ENDPOINT
+    """
+    logging.info("CALLED: /api/update/meeting-details")
+
+    meeting_id = request.json["meeting_id"]
+    meeting_title = request.json["meeting_title"]
+    meeting_description = request.json["meeting_description"]
+    meeting_date = request.json["meeting_date"]
+
+    endpoint = EditMeetingEndpoint(_request_ctx_stack.top.current_user_id, meeting_id, meeting_title,
+                                   meeting_description, meeting_date)
+    result = endpoint.update_meeting()
+    endpoint.close_endpoint()
+    return result.get_formatted_response()
 
 
 # Start the Flask App

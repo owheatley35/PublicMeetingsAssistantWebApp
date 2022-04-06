@@ -1,3 +1,4 @@
+from api.data.MeetingDataManipulator import MeetingDataManipulator
 from api.database.DBConfigurationProvider import DBConfigurationProvider
 from api.database.DatabaseConnectionHelper import DatabaseConnectionHelper
 from api.database.MySQLQueryExecutor import MySQLQueryExecutor
@@ -8,7 +9,7 @@ SET MeetingNotes = %(new_note)s
 WHERE UserId = %(user_id)s AND MeetingId = %(meeting_id)s;"""
 
 
-class NoteUpdater:
+class NoteUpdater(MeetingDataManipulator):
     """
     Class to update a note content string in the database.
     """
@@ -21,12 +22,8 @@ class NoteUpdater:
         :param meeting_id: int of the meeting id as a number in the string
         :param new_note: String of the new meeting note
         """
-        self._user_id: str = user_id
-        self._meeting_id: int = meeting_id
+        super().__init__(user_id, meeting_id)
         self._new_note: str = new_note
-
-        db_config = DBConfigurationProvider().get_configuration_from_local()
-        self._connection_helper = DatabaseConnectionHelper(db_config)
 
     def send_note(self) -> None:
         """
@@ -45,14 +42,6 @@ class NoteUpdater:
             self._connection_helper.commit_connection()
 
             # TODO: Else return error
-
-    def finish(self) -> None:
-        """
-        Close the connection.
-
-        :return: None
-        """
-        self._connection_helper.close_connection()
 
     def _is_params_valid(self) -> bool:
         """

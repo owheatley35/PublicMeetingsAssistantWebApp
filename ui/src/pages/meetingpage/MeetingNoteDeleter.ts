@@ -1,4 +1,3 @@
-// TODO: Implement once I have added roles to the web app, backend is complete
 async function deleteMeetingNote(accessToken: Promise<string>, meetingId: number, meetingNoteIndex: number) {
     try {
         const token: string = await accessToken
