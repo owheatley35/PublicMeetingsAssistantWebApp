@@ -3,6 +3,9 @@ from api.database.DatabaseConnectionHelper import DatabaseConnectionHelper
 
 
 class DatabaseConnector:
+    """
+    Super Class of classes that need to make a database connection.
+    """
 
     def __init__(self):
         db_config = DBConfigurationProvider().get_configuration_from_local()
@@ -10,7 +13,7 @@ class DatabaseConnector:
 
     def finish(self) -> None:
         """
-        Close the connection.
+        Close the connection to the database and the SSH tunnel.
 
         :return: None
         """

@@ -1,14 +1,13 @@
 import logging
 
-from api.database.DBConfigurationProvider import DBConfigurationProvider
-from api.database.DatabaseConnectionHelper import DatabaseConnectionHelper
+from api.data.DatabaseConnector import DatabaseConnector
 from api.database.MySQLQueryExecutor import MySQLQueryExecutor
 from api.helper.SQLValidationHelper import validate_user_id
 
 SQL_QUERY = "SELECT RoleName FROM MeetingsAssistantInitial.users WHERE UserId = %(user_id)s"
 
 
-class UserRoleProvider:
+class UserRoleProvider(DatabaseConnector):
     """
     Provides the role that the user is assigned.
     """
@@ -17,11 +16,9 @@ class UserRoleProvider:
         """
         :param user_id: Unique identification of the user provided by Auth0
         """
+        super().__init__()
         self._user_id = user_id
         self._result = ""
-
-        db_config = DBConfigurationProvider().get_configuration_from_local()
-        self._connection_helper = DatabaseConnectionHelper(db_config)
 
         if self._is_params_valid():
             logging.info("UserRoleProvider: Parameters Valid")
@@ -70,7 +67,3 @@ class UserRoleProvider:
         logging.warning("UserRoleProvider: Database not Queried due to one of the following being 'flase': \n "
                         "Connection Open: %s \n Parameters Valid: %s",
                         str(self._connection_helper.is_connection_open()), str(self._is_params_valid()))
-
-    def finish(self):
-        self._connection_helper.close_connection()
-        logging.info("UserRoleProvider: Closed Connection")

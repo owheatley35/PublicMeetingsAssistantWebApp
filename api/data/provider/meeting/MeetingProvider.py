@@ -1,9 +1,8 @@
 import datetime
 import logging
 
+from api.data.MeetingDataManipulator import MeetingDataManipulator
 from api.data.model.meeting.Meeting import Meeting
-from api.database.DBConfigurationProvider import DBConfigurationProvider
-from api.database.DatabaseConnectionHelper import DatabaseConnectionHelper
 from api.database.MySQLQueryExecutor import MySQLQueryExecutor
 from api.helper.SQLValidationHelper import validate_meeting_id, validate_user_id
 
@@ -11,7 +10,7 @@ SQL_QUERY = """SELECT MeetingId, MeetingTitle, NumberOfAttendees, MeetingDateTim
 FROM MeetingsAssistantInitial.meetings WHERE UserId = %(user_id)s AND MeetingId = %(meeting_id)s"""
 
 
-class MeetingProvider:
+class MeetingProvider(MeetingDataManipulator):
     """
     Provider to get a meeting from its ID, only if the meeting belongs to the user.
     """
@@ -25,12 +24,8 @@ class MeetingProvider:
         :param meeting_id: int for the meeting id
         """
 
-        self._user_id: str = user_id
-        self._meeting_id: int = meeting_id
+        super().__init__(user_id, meeting_id)
         self._result: Meeting = Meeting(0, "", datetime.datetime.now(), 0, "", "")
-
-        db_config = DBConfigurationProvider().get_configuration_from_local()
-        self._connection_helper = DatabaseConnectionHelper(db_config)
 
         if self._is_params_valid():
             logging.info("MeetingProvider: Valid Params")
@@ -77,12 +72,3 @@ class MeetingProvider:
             logging.warning("MeetingProvider: No Meeting Found")
 
         logging.error("MeetingProvider: Connection is not open")
-
-    def finish(self) -> None:
-        """
-        Close the connection to the database and the SSH tunnel
-
-        :return: None
-        """
-        logging.info("MeetingProvider: Connection Closed")
-        self._connection_helper.close_connection()

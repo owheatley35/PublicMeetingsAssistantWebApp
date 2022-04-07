@@ -2,6 +2,9 @@ from api.data.DatabaseConnector import DatabaseConnector
 
 
 class MeetingDataManipulator(DatabaseConnector):
+    """
+    Super class of classes that need to interact with any element in the meeting table of the database.
+    """
 
     def __init__(self, user_id: str, meeting_id: int):
         super().__init__()

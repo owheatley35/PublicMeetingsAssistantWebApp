@@ -1,9 +1,8 @@
 import logging
 from typing import List
 
+from api.data.DatabaseConnector import DatabaseConnector
 from api.data.model.meeting.BasicMeeting import BasicMeeting
-from api.database.DBConfigurationProvider import DBConfigurationProvider
-from api.database.DatabaseConnectionHelper import DatabaseConnectionHelper
 from api.database.MySQLQueryExecutor import MySQLQueryExecutor
 from api.helper.SQLValidationHelper import validate_user_id
 
@@ -13,7 +12,7 @@ BASIC_MEETING_QUERY = """SELECT MeetingId, MeetingTitle, NumberOfAttendees, Meet
 f = '%Y-%m-%d %H:%M:%S'
 
 
-class BasicMeetingProvider:
+class BasicMeetingProvider(DatabaseConnector):
     """
     Retrieves all meetings for an Auth0 user id in a Basic formatting.
     """
@@ -24,13 +23,12 @@ class BasicMeetingProvider:
 
         :param user_id: string id of the user provided by Auth0
         """
+        super().__init__()
         self._result: List[BasicMeeting] = []
         self._user_id: str = user_id
 
         if validate_user_id(self._user_id):
             logging.info("BasicMeetingProvider: User ID valid")
-            db_config = DBConfigurationProvider().get_configuration_from_local()
-            self._connection_helper = DatabaseConnectionHelper(db_config)
             self._result = self._get_meeting_information()
 
     def refresh_data(self) -> None:
@@ -81,11 +79,3 @@ class BasicMeetingProvider:
             logging.error("BasicMeetingProvider: No data found from query.")
 
         return result
-
-    def finish(self) -> None:
-        """
-        Close connection.
-
-        :return: None
-        """
-        self._connection_helper.close_connection()
