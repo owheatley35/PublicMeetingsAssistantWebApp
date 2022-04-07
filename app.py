@@ -1,5 +1,6 @@
 import logging
 import threading
+import LoggingConfig
 
 from flask import Flask, send_from_directory, jsonify, _request_ctx_stack, request
 from flask_cors import CORS, cross_origin
@@ -27,6 +28,8 @@ AUTH0_KEY = auth0_key
 # Flask App initiation
 app = Flask(__name__, static_url_path='', static_folder='ui/build')
 CORS(app)
+
+logging.log(msg="Testing", level=1)
 
 
 @app.errorhandler(AuthError)

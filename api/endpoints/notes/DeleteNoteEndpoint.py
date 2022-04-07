@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from api.data.provider.meeting.MeetingProvider import MeetingProvider
@@ -29,10 +30,9 @@ class DeleteNoteEndpoint:
         # Only delete a note if the index exists
         if 0 <= meeting_note_index < len(self._meeting_notes):
             del self._meeting_notes[meeting_note_index]
-            print("Changed index:", str(meeting_note_index), "resulting in", self._meeting_notes)
+            logging.info("DeleteNoteEndpoint: Note Found Successfully")
         else:
-            # TODO: Add some monitoring here
-            print("invalid index")
+            logging.error("DeleteNoteEndpoint: Invalid index")
             self.close_endpoint()
 
     def delete_note(self) -> None:
@@ -42,10 +42,13 @@ class DeleteNoteEndpoint:
         :return: None
         """
         if self._endpoint_status:
+            logging.info("DeleteNoteEndpoint: Deleting Note in Progress")
             new_note: str = convert_list_into_string(self._meeting_notes)
             note_updater = NoteUpdater(self._user_id, self._meeting_id, new_note)
             note_updater.send_note()
             note_updater.finish()
+        else:
+            logging.warning("DeleteNoteEndpoint: Endpoint Closed")
 
     def close_endpoint(self) -> None:
         """
@@ -54,3 +57,4 @@ class DeleteNoteEndpoint:
         :return: None
         """
         self._endpoint_status = False
+        logging.info("DeleteNoteEndpoint: Endpoint Closed")

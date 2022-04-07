@@ -1,3 +1,5 @@
+import logging
+
 
 class MySQLQueryExecutor:
     """
@@ -26,9 +28,11 @@ class MySQLQueryExecutor:
                 self._cursor.execute(query, parameters)
             else:
                 self._cursor.execute(query)
-        except Exception:
-            # TODO: Add custom exception
-            print("Invalid Query")
+
+            logging.info("MySQLQueryExecutor: Query Successfully Executed")
+
+        except Exception as e:
+            logging.error("MySQLQueryExecutor: ", e)
 
         for row in self._cursor:
             rows.append(row)

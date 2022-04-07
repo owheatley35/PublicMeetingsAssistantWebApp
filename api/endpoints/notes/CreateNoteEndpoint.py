@@ -1,3 +1,5 @@
+import logging
+
 from api.Constants import STRING_SPLITTER
 from api.data.provider.meeting.MeetingProvider import MeetingProvider
 from api.data.updater.NoteUpdater import NoteUpdater
@@ -30,13 +32,14 @@ class CreateNoteEndpoint:
         :return: boolean whether adding the new note was successful
         """
         if self._endpoint_status and validate_meeting_note(self._new_note_content):
+            logging.info("CreateNoteEndpoint: Starting endpoint")
             new_notes_string = self._form_new_notes_string()
             note_updater = NoteUpdater(self._user_id, self._meeting_id, new_notes_string)
             note_updater.send_note()
             note_updater.finish()
             return True
         else:
-            print("Failed to add new note.")
+            logging.error("CreateNoteEndpoint: Failed to add new note. Either the endpoint is closed or the note is invalid.")
             return False
 
     def close_endpoint(self) -> None:
@@ -46,6 +49,7 @@ class CreateNoteEndpoint:
         :return: None
         """
         self._endpoint_status = False
+        logging.info("CreateNoteEndpoint: Closed Endpoint")
 
     def _form_new_notes_string(self) -> str:
         """

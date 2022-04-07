@@ -7,6 +7,8 @@ from api.data.provider.UserRoleProvider import UserRoleProvider
 class UserRoleEndpoint:
 
     def __init__(self, user_id: str):
+        logging.info("UserRoleEndpoint: Starting Endpoint")
+
         self._user_id = user_id
         self._role_provider = UserRoleProvider(self._user_id)
         self._endpoint_status = True
@@ -26,3 +28,4 @@ class UserRoleEndpoint:
         """
         self._role_provider.finish()
         self._endpoint_status = False
+        logging.info("UserRoleEndpoint: Endpoint Closed")

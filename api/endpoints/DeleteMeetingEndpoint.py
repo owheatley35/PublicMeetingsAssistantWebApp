@@ -1,3 +1,5 @@
+import logging
+
 from api.Constants import ADMIN_ROLE_NAME
 from api.data.deleter.MeetingDeleter import MeetingDeleter
 from api.data.model.Response import Response
@@ -32,12 +34,15 @@ class DeleteMeetingEndpoint:
         :return: None
         """
         if self._user_role != ADMIN_ROLE_NAME:
+            logging.warning("DeleteMeetingEndpoint: invalid Permissions to access this resource.")
             return Response(False, "Invalid Permissions to access this resource")
 
         if self._endpoint_status:
             self._meeting_deleter.delete_meeting()
+            logging.info("DeleteMeetingEndpoint: Delete Started")
             return Response(True)
 
+        logging.warning("DeleteMeetingsEndpoint: Delete did not commence")
         return Response(False)
 
     def close_endpoint(self) -> None:
@@ -48,3 +53,4 @@ class DeleteMeetingEndpoint:
         """
         self._meeting_deleter.finish()
         self._endpoint_status = False
+        logging.info("DeleteMeetingEndpoint: Endpoint Closed")

@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from api.data.model.meeting.BasicMeeting import BasicMeeting
@@ -27,6 +28,7 @@ class BasicMeetingProvider:
         self._user_id: str = user_id
 
         if validate_user_id(self._user_id):
+            logging.info("BasicMeetingProvider: User ID valid")
             db_config = DBConfigurationProvider().get_configuration_from_local()
             self._connection_helper = DatabaseConnectionHelper(db_config)
             self._result = self._get_meeting_information()
@@ -37,6 +39,7 @@ class BasicMeetingProvider:
 
         :return: None
         """
+        logging.info("BasicMeetingProvider: Refresh Data")
         self._result = self._get_meeting_information()
 
     def get_meeting_info(self) -> List[BasicMeeting]:
@@ -57,6 +60,8 @@ class BasicMeetingProvider:
         result = []
 
         if validate_user_id(self._user_id) and self._connection_helper.is_connection_open():
+            logging.info("BasicMeetingProvider: Params valid and Connection open")
+
             query_helper = MySQLQueryExecutor(self._connection_helper.get_connection_cursor())
             rows_returned = query_helper.execute_query(BASIC_MEETING_QUERY, {
                 'user_id': self._user_id
@@ -65,6 +70,15 @@ class BasicMeetingProvider:
             for row in rows_returned:
                 temp_meeting = BasicMeeting(row[0], row[1], row[3], row[2])
                 result.append(temp_meeting)
+        else:
+            logging.warning("BasicMeetingProvider: Query was not sent to database due to one of the following being "
+                            "'flase': \n Connection Open: %s \n Parameters Valid: %s",
+                            str(self._connection_helper.is_connection_open()), str(validate_user_id(self._user_id)))
+
+        if len(result) > 0:
+            logging.info("BasicMeetingProvider: Query Successful")
+        else:
+            logging.error("BasicMeetingProvider: No data found from query.")
 
         return result
 
@@ -74,5 +88,4 @@ class BasicMeetingProvider:
 
         :return: None
         """
-        if validate_user_id(self._user_id):
-            self._connection_helper.close_connection()
+        self._connection_helper.close_connection()

@@ -1,3 +1,5 @@
+import logging
+
 from sshtunnel import SSHTunnelForwarder
 
 from api.database.DBConfiguration import DBConfiguration
@@ -17,9 +19,9 @@ class DatabaseConnectionHelper:
         """
         self._configuration = configuration
         self._tunnel: SSHTunnelForwarder = self._create_tunnel()
-        print("SSH Tunnel Established")
+        logging.info("SSH Tunnel Established")
         self._connection = self._establish_connection()
-        print("MySQL DB Connection Established")
+        logging.info("MySQL DB Connection Established")
 
     def get_connection_cursor(self):
         """
@@ -47,10 +49,10 @@ class DatabaseConnectionHelper:
 
         if self._connection.is_connected():
             self._connection.close()
-            print("DB Connection Closed Successfully")
+            logging.info("DB Connection Closed Successfully")
         if self._tunnel.is_active:
             self._tunnel.close()
-            print("SSH Tunnel Closed Successfully")
+            logging.info("SSH Tunnel Closed Successfully")
 
     def is_connection_open(self) -> bool:
         """

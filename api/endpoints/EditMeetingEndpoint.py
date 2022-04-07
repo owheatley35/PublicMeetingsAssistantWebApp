@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from api.Constants import STRING_DATE_SPLITTER
@@ -34,6 +35,7 @@ class EditMeetingEndpoint(Endpoint):
         meeting_datetime_provider = MeetingDateTimeProvider(self._user_id, self._meeting_id)
         self._current_date_time: datetime = meeting_datetime_provider.get_meeting_datetime()
         meeting_datetime_provider.finish()
+        logging.info("EditMeetingEndpoint: Retrieved Current datetime")
 
         year, month, day = new_meeting_date.split(STRING_DATE_SPLITTER)
         self._meeting_date_time: datetime = datetime(int(year), int(month), int(day), self._current_date_time.hour,
@@ -49,13 +51,14 @@ class EditMeetingEndpoint(Endpoint):
         :return: Response with success status
         """
 
-        print("running update")
+        logging.info("EditMeetingEndpoint: Starting update")
 
         if self._endpoint_status:
             result = self._updater.send_update()
             self._endpoint_status = False
             return Response(result)
 
+        logging.warning("EditMeetingEndpoint: Meeting note edited as Endpoint Closed")
         return Response(False)
 
     def close_endpoint(self) -> None:
@@ -66,3 +69,4 @@ class EditMeetingEndpoint(Endpoint):
         """
         self._endpoint_status = False
         self._updater.finish()
+        logging.info("EditMeetingEndpoint: Closed Endpoint")

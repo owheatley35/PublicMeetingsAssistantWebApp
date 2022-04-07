@@ -1,6 +1,6 @@
+import logging
+
 from api.data.MeetingDataManipulator import MeetingDataManipulator
-from api.database.DBConfigurationProvider import DBConfigurationProvider
-from api.database.DatabaseConnectionHelper import DatabaseConnectionHelper
 from api.database.MySQLQueryExecutor import MySQLQueryExecutor
 from api.helper.SQLValidationHelper import validate_user_id, validate_meeting_id, validate_input_string
 
@@ -32,8 +32,11 @@ class NoteUpdater(MeetingDataManipulator):
         :return: None
         """
         if self._connection_helper.is_connection_open() and self._is_params_valid():
+
+            logging.info("NoteUpdater: Connection open and Parameters Valid")
+
             query_helper = MySQLQueryExecutor(self._connection_helper.get_connection_cursor())
-            result = query_helper.execute_query(SQL_QUERY, {
+            query_helper.execute_query(SQL_QUERY, {
                 'user_id': self._user_id,
                 'meeting_id': self._meeting_id,
                 'new_note': self._new_note
@@ -41,7 +44,9 @@ class NoteUpdater(MeetingDataManipulator):
 
             self._connection_helper.commit_connection()
 
-            # TODO: Else return error
+        logging.warning("NoteUpdater: Note was not sent to database due to one of the following being 'flase': \n "
+                        "Connection Open: %s \n Parameters Valid: %s",
+                        str(self._connection_helper.is_connection_open()), str(self._is_params_valid()))
 
     def _is_params_valid(self) -> bool:
         """

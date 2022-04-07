@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from api.data.provider.meeting.MeetingProvider import MeetingProvider
@@ -32,11 +33,10 @@ class UpdateNoteEndpoint:
         self._meeting_notes: List[str] = break_string_into_list(meeting_notes)
 
         if validate_meeting_note(meeting_note_content):
+            logging.info("UpdateNoteEndpoint: Meeting Note Valid")
             self._meeting_notes[meeting_note_index] = meeting_note_content
-            print("Changed index:", str(meeting_note_index), "resulting in", self._meeting_notes)
         else:
-            # TODO: Add some monitoring here
-            print("Invalid note")
+            logging.error("UpdateNoteEndpoint: Invalid note")
             self.close_endpoint()
 
     def update_note(self) -> None:
@@ -48,10 +48,13 @@ class UpdateNoteEndpoint:
         """
 
         if self._endpoint_status:
+            logging.info("UpdateNoteEndpoint: Starting update")
             new_note: str = convert_list_into_string(self._meeting_notes)
             note_updater = NoteUpdater(self._user_id, self._meeting_id, new_note)
             note_updater.send_note()
             note_updater.finish()
+        else:
+            logging.warning("UpdateNoteEndpoint: Endpoint Closed")
 
     def close_endpoint(self) -> None:
         """
@@ -59,3 +62,4 @@ class UpdateNoteEndpoint:
         :return: None
         """
         self._endpoint_status = False
+        logging.info("UpdateNoteEndpoint: Endpoint Closed")

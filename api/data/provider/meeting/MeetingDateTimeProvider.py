@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from api.database.DBConfigurationProvider import DBConfigurationProvider
@@ -27,7 +28,12 @@ class MeetingDateTimeProvider:
         self._connection_helper = DatabaseConnectionHelper(db_config)
 
         if self._validate_params() and self._connection_helper.is_connection_open():
+            logging.info("MeetingDateTimeProvider: params valid and connection open")
             self._datetime_result = self._retrieve_date_time()
+        else:
+            logging.warning("MeetingDateTimeProvider: Query was not executed due to one of the following being "
+                            "'flase': \n Connection Open: %s \n Parameters Valid: %s",
+                            str(self._connection_helper.is_connection_open()), str(self._validate_params()))
 
     def get_meeting_datetime(self):
         """
@@ -50,8 +56,10 @@ class MeetingDateTimeProvider:
         })
 
         for row in rows_returned:
-            print(row[0])
+            logging.info("MeetingDateTimeProvider: Query Successful")
             return row[0]
+
+        logging.error("MeetingDateTimeProvider: DateTime not found")
 
     def _validate_params(self) -> bool:
         """
@@ -66,4 +74,5 @@ class MeetingDateTimeProvider:
         Close database connection.
         :return: None
         """
+        logging.info("MeetingDateTimeProvider: Connection Closed")
         self._connection_helper.close_connection()

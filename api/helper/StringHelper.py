@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+import logging
 
 from api.Constants import STRING_SPLITTER, STRING_DATE_SPLITTER, STRING_TIME_SPLITTER
 
@@ -51,11 +52,9 @@ def convert_str_to_datetime(meeting_date: str, meeting_time: str) -> datetime:
         day: int = int(split_date[2])
         hour: int = int(split_time[0])
         mins: int = int(split_time[1])
-    except:
-        # TODO: Find what exception will be raised and do logging
-        print("Conversion failed")
-
-    return datetime(year, month, day, hour, mins, 0, 0)
+        return datetime(year, month, day, hour, mins, 0, 0)
+    except Exception as e:
+        logging.error("Failed to convert string to datetime: %s", e)
 
 
 def convert_list_to_comma_seperated_string(str_list: List[str]) -> str:

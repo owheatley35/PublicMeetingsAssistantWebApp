@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from api.data.provider.meeting.BasicMeetingProvider import BasicMeetingProvider
@@ -18,6 +19,7 @@ class GetBasicMeetingsEndpoint:
 
         :param user_id: string of the user id provided by Auth0
         """
+        logging.info("GetBasicMeetingsEndpoint: Starting")
         self._user_id = user_id
         self._meetings_provider = BasicMeetingProvider(self._user_id)
         self._endpoint_status = True
@@ -34,3 +36,4 @@ class GetBasicMeetingsEndpoint:
     def close_endpoint(self) -> None:
         self._meetings_provider.finish()
         self._endpoint_status = False
+        logging.info("GetBasicMeetingsEndpoint: Close Endpoint")

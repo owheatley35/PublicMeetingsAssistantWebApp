@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from api.data.model.meeting.Meeting import Meeting
 from api.database.DBConfigurationProvider import DBConfigurationProvider
@@ -32,10 +33,10 @@ class MeetingProvider:
         self._connection_helper = DatabaseConnectionHelper(db_config)
 
         if self._is_params_valid():
-            print("Valid Params")
+            logging.info("MeetingProvider: Valid Params")
             self._result = self._get_meeting_information()
         else:
-            print("Invalid Params")
+            logging.warning("MeetingProvider: Invalid Params")
 
     def retrieve_meetings(self) -> Meeting:
         """
@@ -60,6 +61,8 @@ class MeetingProvider:
         """
 
         if self._connection_helper.is_connection_open():
+            logging.info("MeetingProvider: Connection Open")
+
             query_helper = MySQLQueryExecutor(self._connection_helper.get_connection_cursor())
             rows_returned = query_helper.execute_query(SQL_QUERY, {
                 'user_id': self._user_id,
@@ -68,10 +71,12 @@ class MeetingProvider:
 
             for row in rows_returned:
                 temp_meeting = Meeting(row[0], row[1], row[3], row[2], row[4], row[5])
-                print(temp_meeting)
+                logging.info("MeetingProvider: Query Successful")
                 return temp_meeting
 
-            # TODO: Raise Exception || Log error
+            logging.warning("MeetingProvider: No Meeting Found")
+
+        logging.error("MeetingProvider: Connection is not open")
 
     def finish(self) -> None:
         """
@@ -79,4 +84,5 @@ class MeetingProvider:
 
         :return: None
         """
+        logging.info("MeetingProvider: Connection Closed")
         self._connection_helper.close_connection()

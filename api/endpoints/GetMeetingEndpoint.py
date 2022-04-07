@@ -1,3 +1,4 @@
+import logging
 
 from api.data.provider.meeting.MeetingProvider import MeetingProvider
 from api.helper.JSONHelper import convert_custom_object_to_dict
@@ -16,6 +17,9 @@ class GetMeetingEndpoint:
         :param user_id: string id of the user (provided by Auth0)
         :param meeting_id: string id of the meeting to be retrieved
         """
+
+        logging.info("GetMeetingEndpoint: Starting Endpoint")
+
         self._user_id: str = user_id
         self._meeting_id: int = int(meeting_id)
         self._endpoint_status: bool = True
@@ -37,3 +41,4 @@ class GetMeetingEndpoint:
         """
         self._meetings_provider.finish()
         self._endpoint_status = False
+        logging.info("GetMeetingEndpoint: Endpoint Closed")

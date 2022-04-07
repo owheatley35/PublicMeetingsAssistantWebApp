@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from api.data.creator.MeetingCreator import MeetingCreator
@@ -39,8 +40,11 @@ class CreateMeetingEndpoint:
         :return: None
         """
         if self._endpoint_status:
+            logging.info("CreateMeetingEndpoint: Creating Endpoint")
             self._meeting_creator.send_meeting()
             self._endpoint_status = False
+        else:
+            logging.warning("CreateMeetingEndpoint: Meeting not created since Endpoint Closed")
 
     def close_endpoint(self) -> None:
         """
@@ -50,3 +54,4 @@ class CreateMeetingEndpoint:
         """
         self._meeting_creator.finish()
         self._endpoint_status = False
+        logging.info("CreateMeetingEndpoint: Endpoint Closed")
